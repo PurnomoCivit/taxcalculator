@@ -1,30 +1,17 @@
-mysql:
-  image: mysql:5.6.34
-  ports:
-    - "3306:3306"
-  volumes_from:
-    - dbdata
-  environment:
-    - MYSQL_ROOT_PASSWORD=root
-    - MYSQL_DATABASE=dev
-
-dbdata:
-  image: tianon/true
-  volumes:
-    - /var/lib/mysql
-
-app:
-  build: .
-  environment:
-    RAILS_ENV: development
-  ports:
-    - '3000:3000'
-  volumes_from:
-    - appdata
-  links:
-    - "mysql"
-
-appdata:
-  image: tianon/true
-  volumes:
-    - ".:/workspace"
+version: '3'
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+  web:
+    build: .
+    command: bundle exec rails s -p 4000 -b '0.0.0.0'
+    volumes:
+      - .:/TaxCalculator
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
